@@ -124,34 +124,23 @@ SCRIPTS & ENQUEUEING
 function bones_scripts_and_styles() {
   if (!is_admin()) {
 
-    // modernizr (without media query polyfill)
+  	/********************* Scripts *********************/
     wp_register_script( 'bones-modernizr', get_stylesheet_directory_uri() . '/library/js/libs/modernizr.custom.min.js', array(), '2.5.3', false );
-
-    // register main stylesheet
-    wp_register_style( 'bones-stylesheet', get_stylesheet_directory_uri() . '/library/css/style.css', array(), '', 'all' );
-
-    // ie-only style sheet
-    wp_register_style( 'bones-ie-only', get_stylesheet_directory_uri() . '/library/css/ie.css', array(), '' );
-
-    // comment reply script for threaded comments
     if ( is_singular() AND comments_open() AND (get_option('thread_comments') == 1)) {
-      wp_enqueue_script( 'comment-reply' );
+		wp_enqueue_script( 'comment-reply' );
     }
-
-    //adding scripts file in the footer
     wp_register_script( 'bones-js', get_stylesheet_directory_uri() . '/library/js/scripts.js', array( 'jquery' ), '', true );
 
-    // enqueue styles and scripts
     wp_enqueue_script( 'bones-modernizr' );
-    wp_enqueue_style( 'bones-stylesheet' );
-    wp_enqueue_style('bones-ie-only');
-    /*
-    I recommend using a plugin to call jQuery
-    using the google cdn. That way it stays cached
-    and your site will load faster.
-    */
     wp_enqueue_script( 'jquery' );
     wp_enqueue_script( 'bones-js' );
+
+    /********************* Scripts *********************/
+    wp_register_style( 'bones-stylesheet', get_stylesheet_directory_uri() . '/library/css/style.css', array(), '', 'all' );
+    wp_register_style( 'bones-ie-only', get_stylesheet_directory_uri() . '/library/css/ie.css', array(), '' );
+
+    wp_enqueue_style( 'bones-stylesheet' );
+    wp_enqueue_style('bones-ie-only');
 
   }
 }
@@ -177,36 +166,8 @@ function bones_theme_support() {
 	// default thumb size
 	set_post_thumbnail_size(125, 125, true);
 
-	// wp custom background (thx to @bransonwerner for update)
-	add_theme_support( 'custom-background',
-	    array(
-	    'default-image' => '',  // background image default
-	    'default-color' => '', // background color default (dont add the #)
-	    'wp-head-callback' => '_custom_background_cb',
-	    'admin-head-callback' => '',
-	    'admin-preview-callback' => ''
-	    )
-	);
-
 	// rss thingy
 	add_theme_support('automatic-feed-links');
-
-	// to add header image support go here: http://themble.com/support/adding-header-background-image-support/
-
-	// adding post format support
-	add_theme_support( 'post-formats',
-		array(
-			'aside',             // title less blurb
-			'gallery',           // gallery of images
-			'link',              // quick link to other site
-			'image',             // an image
-			'quote',             // a quick quote
-			'status',            // a Facebook like status update
-			'video',             // video
-			'audio',             // audio
-			'chat'               // chat transcript
-		)
-	);
 
 	// wp menus
 	add_theme_support( 'menus' );
@@ -278,35 +239,6 @@ function bones_main_nav_fallback() {
 function bones_footer_links_fallback() {
 	/* you can put a default here if you like */
 }
-
-/*********************
-RELATED POSTS FUNCTION
-*********************/
-
-// Related Posts Function (call using bones_related_posts(); )
-function bones_related_posts() {
-	echo '<ul id="bones-related-posts">';
-	global $post;
-	$tags = wp_get_post_tags($post->ID);
-	if($tags) {
-		foreach($tags as $tag) { $tag_arr .= $tag->slug . ','; }
-        $args = array(
-        	'tag' => $tag_arr,
-        	'numberposts' => 5, /* you can change this to show more */
-        	'post__not_in' => array($post->ID)
-     	);
-        $related_posts = get_posts($args);
-        if($related_posts) {
-        	foreach ($related_posts as $post) : setup_postdata($post); ?>
-	           	<li class="related_post"><a class="entry-unrelated" href="<?php the_permalink() ?>" title="<?php the_title_attribute(); ?>"><?php the_title(); ?></a></li>
-	        <?php endforeach; }
-	    else { ?>
-            <?php echo '<li class="no_related_post">No Related Posts Yet!</li>'; ?>
-		<?php }
-	}
-	wp_reset_query();
-	echo '</ul>';
-} /* end bones related posts function */
 
 /*********************
 PAGE NAVI
